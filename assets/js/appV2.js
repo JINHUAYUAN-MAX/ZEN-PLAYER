@@ -15,12 +15,22 @@ const appendHtml = function(element, html) {
     element.insertAdjacentHTML('beforeend', html)
 }
 
+// let songIndex = 0
+
+let playImg = "./assets/images/play.svg";
+let pauseImg = "./assets/images/pause.svg";
+
+// record player animation
+const circleBig = document.querySelector("#circle-bg");
+const circleSm = document.querySelector("#circle-sm");
+
+// playing song
+const songName = document.querySelector("#song-name");
+const audio = document.querySelector("#audio");
+const coverArt = document.querySelector("#cover");
+const musicbox = document.querySelector("#musicbox");
+
 const songList = [
-    {
-        name: "李健 - 贝加尔湖畔",
-        source: "./assets/music/李健 - 贝加尔湖畔.mp3",
-        cover: "./assets/images/chillhop.jpg"
-    },
     {
         name: "逃跑计划 - 夜空中最亮的星",
         source: "./assets/music/逃跑计划 - 夜空中最亮的星.mp3",
@@ -39,7 +49,7 @@ const songList = [
     {
         name: "周杰伦-彩虹",
         source: "./assets/music/周杰伦-彩虹.mp3",
-        cover: "./assets/images/chillhop-2.jpg"
+        cover: "./assets/images/chillhop.jpg"
     }
 ];
 
@@ -57,24 +67,27 @@ const insertSongList = () => {
     }
 }
 
-let playImg = "./assets/images/play.svg";
-let pauseImg = "./assets/images/pause.svg";
+let songIndex = 0;
+// preloaded song
+loadMusic(songList[songIndex]);
 
-// record player animation
-const circleBig = document.querySelector("#circle-bg");
-const circleSm = document.querySelector("#circle-sm");
+function loadMusic() {
+    coverArt.src = songList[songIndex].cover;
+    songName.innerText = songList[songIndex].name;
+    audio.src = songList[songIndex].source;
+}
 
 const playSong = () => {
     let playPause = document.querySelector("#play-stop");
     playPause.src = playImg;
-    coverArt.src = songList[index].cover;
+    coverArt.src = songList[songIndex].cover;
     circleBig.classList.add("animate");
     circleSm.classList.add("animate");
-    audio.src = songList[index].source
+    audio.src = songList[songIndex].source;
     audio.play();
 }
 
-const pauseSong = (audio) => {
+const pauseSong = () => {
     let playPause = document.querySelector("#play-stop");
     playPause.src = pauseImg;
     circleBig.classList.remove("animate");
@@ -82,22 +95,30 @@ const pauseSong = (audio) => {
     audio.pause();
 }
 
-const bindEventPlayPause = (audio) => {
-    let playPause = e('#play-stop')
+const bindEventPlayPause = () => {
+    let playPause = document.querySelector("#play-stop");
+    // let playPause = e('#play-stop')
     let isPlaying = false;
 
-    playPause.addEventListener('click', (audio) => {
+    playPause.addEventListener('click', () => {
         isPlaying = !isPlaying;
-        isPlaying ? playSong(audio) : pauseSong(audio);
+        // isPlaying ? pauseSong() : playSong();
+        if (isPlaying) {
+            playSong()
+        } else {
+            pauseSong()
+        }
     })
 }
 
-let index = 0
+
 const bindEventBackward = (audio) => {
     let backward = e('#backward')
     backward.addEventListener('click', function() {
-        index = (songList.length + index - 1) % songList.length
-        audio.src = songList[index].source
+        songIndex = (songList.length + songIndex - 1) % songList.length
+        coverArt.src = songList[songIndex].cover
+        songName.innerText = songList[songIndex].name
+        audio.src = songList[songIndex].source
         audio.play()
     })
 }
@@ -105,15 +126,17 @@ const bindEventBackward = (audio) => {
 const bindEventForward = (audio) => {
     let forward = e('#forward')
     forward.addEventListener('click', function() {
-        index = (index + 1) % songList.length
-        audio.src = songList[index].source
+        songIndex = (songIndex + 1) % songList.length
+        coverArt.src = songList[songIndex].cover
+        songName.innerText = songList[songIndex].name
+        audio.src = songList[songIndex].source
         audio.play()
     })
 }
 
 const bindEvents = function() {
-    let audio = e('#audio')
-    bindEventPlayPause(audio)
+    
+    bindEventPlayPause()
     bindEventBackward(audio)
     bindEventForward(audio)
 }
